@@ -22,3 +22,24 @@ jobs:
         gcloud builds submit \
           --tag gcr.io/${{ env.CLOUDSDK_CORE_PROJECT }}/${{ env.APPLICATION_NAME }}:${GITHUB_SHA} \
           --gcs-log-dir=gs://cloud-build-logs-${{ env.CLOUDSDK_CORE_PROJECT }}/buildlogs
+    - name: Generate Test ID
+      id: test-id
+      run: |
+        TEST_ID=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 16 | head -n 1)
+        echo "::set-output name=test_id::$TEST_ID"
+    - name: Deploy Test GKE Cluster
+      run: |
+          gcloud container clusters create kcmb-${{ steps.test-id.outputs.test_id }} \
+          --num-nodes=1 \
+          --zone=${{ env.CLUSTER_ZONE }} \
+          --machine-type=n1-standard-1 \
+          --network=kubernetes-cloud-mysql-backup-testing \
+          --subnetwork=kubernetes-cloud-mysql-backup-testing \
+          --disk-size=10
+    - name: Get Kubernetes Credentials - Prod
+      run: |
+        gcloud container clusters get-credentials kcmb-${{ steps.test-id.outputs.test_id } --zone=${{ env.CLUSTER_ZONE }}
+    - name: Delete Kubernetes Cluster
+      run: |
+          gcloud container delete create kcmb-${{ steps.test-id.outputs.test_id }} \
+          --async
