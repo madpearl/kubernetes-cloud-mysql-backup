@@ -1,0 +1,24 @@
+name: Build and test kubernetes-cloud-mysql-backup
+on: push
+jobs:
+  build-and-test:
+    env:
+      GCLOUD_VERSION: 304.0.0
+      PROJECT_NAME: maynard-io-public
+      CLUSTER_ZONE: europe-west2-a
+      APPLICATION_NAME: kubernetes-cloud-mysql-backup
+    runs-on: ubuntu-latest 
+    steps:
+    - name: Fetch Source Code
+      uses: actions/checkout@master      
+    - name: Authenticate to gcloud
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: ${{ env.GCLOUD_VERSION }}
+        service_account_email: github-automation@$${{ steps.deployment-data.outputs.prod_project_name }}.iam.gserviceaccount.com 
+        service_account_key: ${{ secrets.GCLOUD_AUTH }}
+    - name: Build Container and Publish to GCR
+      run: |
+        gcloud builds submit \
+          --tag gcr.io/${{ steps.deployment-data.outputs.gcp_project }}/${{ env.APPLICATION_NAME }}:${ github.ref } \
+          --gcs-log-dir=gs://cloud-build-logs-${{ steps.deployment-data.outputs.gcp_project }}/buildlogs
