@@ -38,7 +38,7 @@ jobs:
           --disk-size=10
     - name: Get Kubernetes Credentials - Prod
       run: |
-        gcloud container clusters get-credentials kcmb-${{ steps.test-id.outputs.test_id } --zone=${{ env.CLUSTER_ZONE }}
+        gcloud container clusters get-credentials kcmb-${{ steps.test-id.outputs.test_id }} --zone=${{ env.CLUSTER_ZONE }}
     - name: Delete Kubernetes Cluster
       run: |
           gcloud container delete create kcmb-${{ steps.test-id.outputs.test_id }} \
