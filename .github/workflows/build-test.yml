@@ -4,7 +4,7 @@ jobs:
   build-and-test:
     env:
       GCLOUD_VERSION: 304.0.0
-      PROJECT_NAME: maynard-io-public
+      CLOUDSDK_CORE_PROJECT: maynard-io-public
       CLUSTER_ZONE: europe-west2-a
       APPLICATION_NAME: kubernetes-cloud-mysql-backup
     runs-on: ubuntu-latest 
@@ -20,5 +20,5 @@ jobs:
     - name: Build Container and Publish to GCR
       run: |
         gcloud builds submit \
-          --tag gcr.io/${{ env.PROJECT_NAME }}/${{ env.APPLICATION_NAME }}:${{ env.GITHUB_SHA }} \
-          --gcs-log-dir=gs://cloud-build-logs-${{ steps.deployment-data.outputs.gcp_project }}/buildlogs
+          --tag gcr.io/${{ env.CLOUDSDK_CORE_PROJECT }}/${{ env.APPLICATION_NAME }}:${{ env.GITHUB_SHA }} \
+          --gcs-log-dir=gs://cloud-build-logs-${{ env.CLOUDSDK_CORE_PROJECT }}/buildlogs
