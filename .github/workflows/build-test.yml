@@ -20,5 +20,5 @@ jobs:
     - name: Build Container and Publish to GCR
       run: |
         gcloud builds submit \
-          --tag gcr.io/${{ steps.deployment-data.outputs.gcp_project }}/${{ env.APPLICATION_NAME }}:${ env.GITHUB_SHA } \
+          --tag gcr.io/${{ env.PROJECT_NAME }}/${{ env.APPLICATION_NAME }}:${{ env.GITHUB_SHA }} \
           --gcs-log-dir=gs://cloud-build-logs-${{ steps.deployment-data.outputs.gcp_project }}/buildlogs
